@@ -24,6 +24,10 @@ A responsive single-page hotel listing and management application built for **Na
 - **SEO & Accessibility**:
   - Dynamic page titles and Open Graph metadata using `react-helmet-async`.
   - Accessible `alt` tags on all images.
+- **Separate URL Routes (No In-Page Toggle)**:
+  - **User Portal (`/user`)**: `http://localhost:3000/user` — Dedicated public guest view. Allows searching, price range filtering, viewing cards, and inspecting the Leaflet map detail page. Management controls (Add/Edit/Delete) are completely hidden.
+  - **Admin Panel (`/admin`)**: `http://localhost:3000/admin` — Dedicated administration view. Displays the "Add Hotel" button, "Edit" and "Delete" actions on cards, and full CRUD modal controls.
+  - **Root URL (`/`)**: Automatically redirects to `/user`.
 
 ---
 

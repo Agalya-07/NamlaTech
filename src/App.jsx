@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HotelListPage from './pages/HotelListPage';
 import HotelDetailPage from './pages/HotelDetailPage';
@@ -9,31 +9,44 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* Global Navigation Header */}
+      {/* Global Navigation Header (automatically adapts to /admin vs /user based on URL) */}
       <Navbar onOpenAddModal={() => setIsAddModalOpen(true)} />
 
       {/* Main Routed Content */}
       <div className="app-content">
         <Routes>
+          {/* Default Route: Redirects to the User Portal */}
+          <Route path="/" element={<Navigate to="/user" replace />} />
+
+          {/* User Portal (Guest / Public Browsing) */}
           <Route
-            path="/"
+            path="/user"
             element={
               <HotelListPage
                 isAddModalOpen={isAddModalOpen}
                 setIsAddModalOpen={setIsAddModalOpen}
+                viewMode="user"
               />
             }
           />
-          <Route path="/hotels/:id" element={<HotelDetailPage />} />
+          <Route path="/user/hotels/:id" element={<HotelDetailPage viewMode="user" />} />
+          <Route path="/hotels/:id" element={<HotelDetailPage viewMode="user" />} />
+
+          {/* Admin Panel (Management, Add, Edit, Delete) */}
           <Route
-            path="*"
+            path="/admin"
             element={
               <HotelListPage
                 isAddModalOpen={isAddModalOpen}
                 setIsAddModalOpen={setIsAddModalOpen}
+                viewMode="admin"
               />
             }
           />
+          <Route path="/admin/hotels/:id" element={<HotelDetailPage viewMode="admin" />} />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/user" replace />} />
         </Routes>
       </div>
 

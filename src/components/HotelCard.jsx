@@ -4,7 +4,7 @@ import { MapPin, Edit3, Trash2, ExternalLink, Image as ImageIcon } from 'lucide-
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80';
 
-export default function HotelCard({ hotel, onEdit, onDelete }) {
+export default function HotelCard({ hotel, onEdit, onDelete, viewMode = 'user' }) {
   const [imageError, setImageError] = useState(false);
 
   // Short snippet of description (limit to ~120 characters)
@@ -16,11 +16,13 @@ export default function HotelCard({ hotel, onEdit, onDelete }) {
 
   const displayImage = imageError || !hotel.image_url ? FALLBACK_IMAGE : hotel.image_url;
 
+  const detailUrl = viewMode === 'admin' ? `/admin/hotels/${hotel.id}` : `/user/hotels/${hotel.id}`;
+
   return (
     <div className="hotel-card">
       {/* Thumbnail Image */}
       <div className="hotel-card-image-wrap">
-        <Link to={`/hotels/${hotel.id}`} className="hotel-card-image-link" tabIndex={-1}>
+        <Link to={detailUrl} className="hotel-card-image-link" tabIndex={-1}>
           <img
             src={displayImage}
             alt={`Photo of ${hotel.title}`}
@@ -35,7 +37,7 @@ export default function HotelCard({ hotel, onEdit, onDelete }) {
       {/* Main Content Area */}
       <div className="hotel-card-body">
         <div className="hotel-card-header">
-          <Link to={`/hotels/${hotel.id}`} className="hotel-card-title-link">
+          <Link to={detailUrl} className="hotel-card-title-link">
             <h3 className="hotel-card-title">{hotel.title}</h3>
           </Link>
           <div className="hotel-card-price-badge">
@@ -58,32 +60,34 @@ export default function HotelCard({ hotel, onEdit, onDelete }) {
 
         {/* Action Buttons */}
         <div className="hotel-card-actions">
-          <Link to={`/hotels/${hotel.id}`} className="btn btn-outline btn-sm">
+          <Link to={detailUrl} className="btn btn-outline btn-sm">
             <ExternalLink size={15} />
-            <span>View Details</span>
+            <span>View Details & Map</span>
           </Link>
 
-          <div className="action-buttons-group">
-            <button
-              onClick={() => onEdit(hotel)}
-              className="btn btn-secondary btn-sm"
-              title="Edit Hotel"
-              aria-label={`Edit ${hotel.title}`}
-            >
-              <Edit3 size={15} />
-              <span>Edit</span>
-            </button>
+          {viewMode === 'admin' && (
+            <div className="action-buttons-group">
+              <button
+                onClick={() => onEdit(hotel)}
+                className="btn btn-secondary btn-sm"
+                title="Edit Hotel"
+                aria-label={`Edit ${hotel.title}`}
+              >
+                <Edit3 size={15} />
+                <span>Edit</span>
+              </button>
 
-            <button
-              onClick={() => onDelete(hotel)}
-              className="btn btn-danger btn-sm"
-              title="Delete Hotel"
-              aria-label={`Delete ${hotel.title}`}
-            >
-              <Trash2 size={15} />
-              <span>Delete</span>
-            </button>
-          </div>
+              <button
+                onClick={() => onDelete(hotel)}
+                className="btn btn-danger btn-sm"
+                title="Delete Hotel"
+                aria-label={`Delete ${hotel.title}`}
+              >
+                <Trash2 size={15} />
+                <span>Delete</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

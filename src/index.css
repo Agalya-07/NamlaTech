@@ -91,6 +91,12 @@ button {
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: var(--transition);
+}
+
+.navbar-container.navbar-admin {
+  background-color: #0f172a;
+  border-bottom: 2px solid #3b82f6;
 }
 
 .navbar-wrapper {

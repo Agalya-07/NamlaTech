@@ -20,7 +20,7 @@ import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import { PlusCircle, Search, Building2, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 
-export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen }) {
+export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen, viewMode = 'user' }) {
   const dispatch = useDispatch();
   const {
     items,
@@ -114,12 +114,27 @@ export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen }) {
   return (
     <>
       <Helmet>
-        <title>Explore Luxury Hotels & Resorts | NamlaTech Portal</title>
+        <title>
+          {viewMode === 'admin'
+            ? 'Admin Hotel Management | NamlaTech Portal'
+            : 'Explore Luxury Hotels & Resorts | NamlaTech Portal'}
+        </title>
         <meta
           name="description"
-          content="Browse premier hotel listings with real-time price filtering, location maps, and instant bookings."
+          content={
+            viewMode === 'admin'
+              ? 'Admin portal to add, update, and manage hotel listings and pricing.'
+              : 'Browse premier hotel listings with real-time price filtering, location maps, and instant bookings.'
+          }
         />
-        <meta property="og:title" content="Explore Luxury Hotels & Resorts" />
+        <meta
+          property="og:title"
+          content={
+            viewMode === 'admin'
+              ? 'Admin Hotel Management'
+              : 'Explore Luxury Hotels & Resorts'
+          }
+        />
         <meta
           property="og:description"
           content="Find top rated hotels with geolocation maps and transparent pricing."
@@ -197,13 +212,15 @@ export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen }) {
               </div>
 
               <div className="top-bar-right">
-                <button
-                  onClick={handleOpenAdd}
-                  className="btn btn-primary btn-sm flex-align-center gap-1"
-                >
-                  <PlusCircle size={16} />
-                  <span>Add Hotel</span>
-                </button>
+                {viewMode === 'admin' && (
+                  <button
+                    onClick={handleOpenAdd}
+                    className="btn btn-primary btn-sm flex-align-center gap-1"
+                  >
+                    <PlusCircle size={16} />
+                    <span>Add Hotel</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -220,7 +237,7 @@ export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen }) {
                 <p className="empty-description">
                   {searchTitle || minPrice || maxPrice
                     ? 'No hotels match your current search and filter criteria. Try broadening your parameters.'
-                    : 'There are currently no hotels in the database. Click "Add Hotel" to create the first listing!'}
+                    : 'There are currently no hotels in the database.'}
                 </p>
                 {(searchTitle || minPrice || maxPrice) && (
                   <button
@@ -239,6 +256,7 @@ export default function HotelListPage({ isAddModalOpen, setIsAddModalOpen }) {
                     hotel={hotel}
                     onEdit={handleOpenEdit}
                     onDelete={handleOpenDelete}
+                    viewMode={viewMode}
                   />
                 ))}
               </div>

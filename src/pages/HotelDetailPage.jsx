@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -55,10 +55,13 @@ const customMarkerIcon = new L.DivIcon({
   popupAnchor: [0, -32]
 });
 
-export default function HotelDetailPage() {
+export default function HotelDetailPage({ viewMode = 'user' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  const isAdmin = location.pathname.startsWith('/admin') || viewMode === 'admin';
 
   const {
     currentHotel,
@@ -88,7 +91,7 @@ export default function HotelDetailPage() {
     if (currentHotel) {
       await dispatch(deleteHotel({ id: currentHotel.id, imageUrl: currentHotel.image_url }));
       setIsDeleteOpen(false);
-      navigate('/');
+      navigate(isAdmin ? '/admin' : '/user');
     }
   };
 
@@ -109,9 +112,9 @@ export default function HotelDetailPage() {
         <p className="text-muted mt-2">
           {error || "The hotel listing you're looking for doesn't exist or was removed."}
         </p>
-        <Link to="/" className="btn btn-primary mt-4">
+        <Link to={isAdmin ? '/admin' : '/user'} className="btn btn-primary mt-4">
           <ArrowLeft size={16} />
-          <span>Back to Hotel Listings</span>
+          <span>{isAdmin ? 'Back to Admin Panel' : 'Back to Hotels'}</span>
         </Link>
       </div>
     );
@@ -143,27 +146,29 @@ export default function HotelDetailPage() {
       <div className="detail-page-container">
         {/* Navigation Breadcrumb & Back button */}
         <div className="detail-top-nav">
-          <Link to="/" className="btn btn-secondary btn-sm flex-align-center gap-1">
+          <Link to={isAdmin ? '/admin' : '/user'} className="btn btn-secondary btn-sm flex-align-center gap-1">
             <ArrowLeft size={16} />
-            <span>Back to All Hotels</span>
+            <span>{isAdmin ? 'Back to Admin Panel' : 'Back to Hotels'}</span>
           </Link>
 
-          <div className="detail-actions-group">
-            <button
-              onClick={() => setIsEditOpen(true)}
-              className="btn btn-secondary btn-sm"
-            >
-              <Edit3 size={15} />
-              <span>Edit Details</span>
-            </button>
-            <button
-              onClick={() => setIsDeleteOpen(true)}
-              className="btn btn-danger btn-sm"
-            >
-              <Trash2 size={15} />
-              <span>Delete</span>
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="detail-actions-group">
+              <button
+                onClick={() => setIsEditOpen(true)}
+                className="btn btn-secondary btn-sm"
+              >
+                <Edit3 size={15} />
+                <span>Edit Details</span>
+              </button>
+              <button
+                onClick={() => setIsDeleteOpen(true)}
+                className="btn btn-danger btn-sm"
+              >
+                <Trash2 size={15} />
+                <span>Delete</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Success / Error alerts */}
